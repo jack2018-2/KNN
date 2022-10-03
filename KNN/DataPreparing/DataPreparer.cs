@@ -44,9 +44,8 @@ namespace ConsoleApp10.DataPreparing
             var classes = new HashSet<Classes>(new ClassesComparer());
             foreach (var row in collectedData)
             {
-                // ToDo итератор будет прокручиваться каждый раз...
-                // некритично по идее, подумать
-                classes.Add(new Classes(row.Klass, iterator++));
+                if (classes.Add(new Classes(row.Klass, iterator)))
+                    iterator++;
             }
             Classes = classes.ToList();
         }

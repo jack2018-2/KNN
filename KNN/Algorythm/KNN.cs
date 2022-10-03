@@ -65,7 +65,7 @@ namespace ConsoleApp10.Algorythm
                 distances.Add(dot, distance);
             }
 
-            var orderedDistances = distances.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            var orderedDistances = distances.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
 
             SimpleVote(orderedDistances);
             WeightedVote(orderedDistances);
@@ -75,7 +75,7 @@ namespace ConsoleApp10.Algorythm
         /// <summary>
         /// невзвешенное голосование
         /// </summary>
-        /// <param name="distances">отсортированные по убыванию расстояния от всех точек до классифицируемой точки</param>
+        /// <param name="distances">отсортированные по возрастанию расстояния от всех точек до классифицируемой точки</param>
         private void SimpleVote(Dictionary<Dot, double> distances)
         {
             var nearestClass = distances
@@ -93,28 +93,25 @@ namespace ConsoleApp10.Algorythm
         /// <summary>
         /// взвешенное голосование
         /// </summary>
-        /// <param name="distances">отсортированные по убыванию расстояния от всех точек до классифицируемой точки</param>
-        private void WeightedVote(Dictionary<Dot, double> distances) 
+        /// <param name="distances">отсортированные по возрастанию расстояния от всех точек до классифицируемой точки</param>
+        private void WeightedVote(Dictionary<Dot, double> distances)
         {
-            Dictionary<Classes, double> votes = new Dictionary<Classes, double>();
+            Dictionary<string, double> votes = new Dictionary<string, double>();
 
-            foreach (Dot dot in _dots)
+            foreach (var klass in _classes)
             {
-                foreach (var klass in _classes)
-                {
-                    votes[klass] = 0d;
-                    if (dot.Klass.Classname == klass.Classname)
-                    {
-                        votes[klass] += 1d / distances[dot];
-                    }
-                }
+                votes[klass.Classname] = 0d;
+            }
+
+            for (var i = 0; i < _k && i < distances.Count(); i++)
+            {
+                var distance = distances.ElementAt(i);
+                votes[distance.Key.Klass.Classname] += 1d / distance.Value;
             }
 
             var nearestClass = votes
-                .Take(_k)
-                .GroupBy(x => x.Key)
                 .Select(x =>
-                    new KeyValuePair<Classes, int>(x.Key, x.Count()))
+                    new KeyValuePair<Classes, double>(_classes.Find(y => y.Classname == x.Key), x.Value))
                 .OrderByDescending(x => x.Value)
                 .First().Key;
 
