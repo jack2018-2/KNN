@@ -22,7 +22,8 @@ namespace ConsoleApp10.DataPreparing
             var CSVConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
             {
                 HasHeaderRecord = true,
-                Encoding = System.Text.Encoding.GetEncoding("Windows-1251")
+                Encoding = System.Text.Encoding.GetEncoding("Windows-1251"),
+                Delimiter = ";"
             };
 
             using (var stream = new StreamReader(_filePath, System.Text.Encoding.GetEncoding("Windows-1251")))

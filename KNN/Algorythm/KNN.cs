@@ -59,6 +59,8 @@ namespace ConsoleApp10.Algorythm
         {
             Dictionary<Dot, double> distances = new Dictionary<Dot, double>();
 
+            Normalize();
+
             foreach (Dot dot in _dots)
             {
                 double distance = Utils.pairDotsDistance(dot, _classifyingDot);
@@ -69,7 +71,35 @@ namespace ConsoleApp10.Algorythm
 
             SimpleVote(orderedDistances);
             WeightedVote(orderedDistances);
+        }
 
+        private void Normalize()
+        {
+            var minimums = new List<decimal>(new decimal[7]);
+            var maximums = new List<decimal>(new decimal[7]);
+            _dots.Add(_classifyingDot);
+            foreach (var dot in _dots)
+            {
+                for (var i = 0; i < dot.Signs.Count; i++)
+                {
+                    if (minimums[i] > dot.Signs[i])
+                        minimums[i] = dot.Signs[i];
+
+                    if (maximums[i] < dot.Signs[i])
+                        maximums[i] = dot.Signs[i];
+                }
+            }
+
+            foreach (var dot in _dots)
+            {
+                for (var i = 0; i < dot.Signs.Count; i++)
+                {
+                    dot.Signs[i] = (dot.Signs[i] - minimums[i]) / (maximums[i] - minimums[i]);
+                }
+            }
+
+            
+            _dots.Remove(_classifyingDot);
         }
 
         /// <summary>
